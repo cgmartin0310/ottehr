@@ -80,16 +80,16 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'ICD-SEARCH': {
     type: 'http_auth',
   },
-  'COMMUNICATION-SUBSCRIPTION': {
-    type: 'subscription',
-    subscriptionDetails: [
-      {
-        criteria: `Communication?category=${COMMUNICATION_ISSUE_REPORT_CODE.system}|${COMMUNICATION_ISSUE_REPORT_CODE.code}&status=in-progress`,
-        reason: 'PM - ML internal communication',
-        event: 'create',
-      },
-    ],
-  },
+  // 'COMMUNICATION-SUBSCRIPTION': {
+  //   type: 'subscription',
+  //   subscriptionDetails: [
+  //     {
+  //       criteria: `Communication?category=${COMMUNICATION_ISSUE_REPORT_CODE.system}|${COMMUNICATION_ISSUE_REPORT_CODE.code}&status=in-progress`,
+  //       reason: 'PM - ML internal communication',
+  //       event: 'create',
+  //     },
+  //   ],
+  // },
 };
 
 const updateZambdas = async (config: any): Promise<void> => {
@@ -120,8 +120,10 @@ const updateZambdas = async (config: any): Promise<void> => {
         continue;
       }
 
+      const zambdaPrefix = config.ENVIRONMENT;
+
       let currentDeployedZambda = currentZambdas.find(
-        (tempZambda) => tempZambda.name === `admin-${zambda.toLowerCase()}`,
+        (tempZambda) => tempZambda.name === `${zambdaPrefix}-${zambda.toLowerCase()}`,
       );
 
       if (currentDeployedZambda) {
@@ -129,7 +131,7 @@ const updateZambdas = async (config: any): Promise<void> => {
       } else {
         console.log(`\nZambda ${zambda} is not found, creating it`);
         currentDeployedZambda = await zambdaClient.createZambda({
-          name: `admin-${zambda.toLowerCase()}`,
+          name: `${zambdaPrefix}-${zambda.toLowerCase()}`,
         });
         console.log(`Zambda ${zambda} with ID ${currentDeployedZambda.id}`);
       }
