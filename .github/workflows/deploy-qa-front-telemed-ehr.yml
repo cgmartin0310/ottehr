@@ -3,20 +3,17 @@ name: Deploy QA Front Telemed EHR
 on:
   workflow_dispatch:
     inputs:
-      on:
-        workflow_dispatch:
-          inputs:
-            environment:
-              description: 'Environment name'
-              required: true
-              type: choice
-              default: 'testing'
-              options:
-                - testing
-            branch:
-              description: 'Branch to deploy'
-              required: true
-              default: 'main'
+      environment:
+        description: 'Environment name'
+        required: true
+        type: choice
+        default: 'testing'
+        options:
+          - testing
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
 
 jobs:
   deploy:
@@ -41,45 +38,46 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: pnpm/action-setup@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
           version: 9
 
-      - name: Create the .env directory.
+      - name: Create the .env directory
         run: mkdir -p ${{ env.PACKAGE_LOCATION }}/env/
 
-      - name: Create /env/.env.${{ github.event.inputs.environment }} file
-        run:
-            echo VITE_APP_IS_LOCAL=false >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ZAPEHR_APPLICATION_CLIENT_ID=si1DsHTlu0mO1VhrviRkRbk4iTWi3cAX >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ZAPEHR_APPLICATION_DOMAIN=https://auth.zapehr.com >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ZAPEHR_APPLICATION_AUDIENCE=https://api.zapehr.com >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ZAPEHR_APPLICATION_REDIRECT_URL=https://qa-patient.goldiehealth.com >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ORGANIZATION_NAME_LONG=GoldieHealth >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ORGANIZATION_NAME_SHORT=GoldieHealth >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_ZAPEHR_APPLICATION_ID=dfb082ef-b2c3-4cc4-a4ab-aca7a03ce049 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_FHIR_API_URL=https://fhir-api.zapehr.com >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_PROJECT_API_URL=https://project-api.zapehr.com/v1 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_PROJECT_API_ZAMBDA_URL=https://project-api.zapehr.com/v1 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_INTAKE_ZAMBDAS_URL=http://localhost:3000/local >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_CHECK_IN_ZAMBDA_ID=check-in >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_CREATE_APPOINTMENT_ZAMBDA_ID=create-appointment >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_CANCEL_TELEMED_APPOINTMENT_ZAMBDA_ID=cancel-appointment >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_GET_TOKEN_FOR_CONVERSATION_ZAMBDA_ID=get-token-for-conversation >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_GET_APPOINTMENTS_ZAMBDA_ID=261592b3-84d2-4a45-847a-d818c0071781 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_UPDATE_USER_ZAMBDA_ID=c4c998ff-a18b-469d-b871-ce15b4e76ab5 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_GET_USER_ZAMBDA_ID=e12b11f4-9cb8-434f-85a1-0d8ce14b1628 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_SYNC_USER_ZAMBDA_ID=48c27e20-b30a-4d19-adce-1a1e7e10176c >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_DEACTIVATE_USER_ZAMBDA_ID=a6a47e58-4263-4a2c-86ab-5c2d43221522 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_GET_EMPLOYEES_ZAMBDA_ID=4fbd65a5-3d11-46a3-b9f7-fa6af8f74d3f >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_GET_TELEMED_APPOINTMENTS_ZAMBDA_ID=3659e87e-8d6e-433e-8873-3f798db1f99b >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_INIT_TELEMED_SESSION_ZAMBDA_ID=ea0153b7-b4c9-4706-b63b-476d08087aa8 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_GET_CHART_DATA_ZAMBDA_ID=0c136afd-f86f-41fa-9440-23f2f5ded8a3 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_SAVE_CHART_DATA_ZAMBDA_ID=3118e828-7339-4022-b438-73c7e2f6c6ca >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_CHANGE_TELEMED_APPOINTMENT_STATUS_ZAMBDA_ID=2dc8bb75-7093-463f-aa30-ecefc7290bcb >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_DELETE_CHART_DATA_ZAMBDA_ID=305ddf3d-9c8f-4619-bd74-07a3f7145e59 >> .env.${{ github.event.inputs.environment }}
-            echo VITE_APP_QRS_URL=http://localhost:3002 >> .env.${{ github.event.inputs.environment }}
-        working-directory: .env
+      - name: Create .env.${{ github.event.inputs.environment }} file
+        run: |
+          echo VITE_APP_IS_LOCAL=false >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_IS_LOCAL=false >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ZAPEHR_APPLICATION_CLIENT_ID=si1DsHTlu0mO1VhrviRkRbk4iTWi3cAX >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ZAPEHR_APPLICATION_DOMAIN=https://auth.zapehr.com >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ZAPEHR_APPLICATION_AUDIENCE=https://api.zapehr.com >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ZAPEHR_APPLICATION_REDIRECT_URL=https://qa-patient.goldiehealth.com >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ORGANIZATION_NAME_LONG=GoldieHealth >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ORGANIZATION_NAME_SHORT=GoldieHealth >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_ZAPEHR_APPLICATION_ID=dfb082ef-b2c3-4cc4-a4ab-aca7a03ce049 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_FHIR_API_URL=https://fhir-api.zapehr.com >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_PROJECT_API_URL=https://project-api.zapehr.com/v1 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_PROJECT_API_ZAMBDA_URL=https://project-api.zapehr.com/v1 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_INTAKE_ZAMBDAS_URL=http://localhost:3000/local >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_CHECK_IN_ZAMBDA_ID=check-in >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_CREATE_APPOINTMENT_ZAMBDA_ID=create-appointment >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_CANCEL_TELEMED_APPOINTMENT_ZAMBDA_ID=cancel-appointment >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_GET_TOKEN_FOR_CONVERSATION_ZAMBDA_ID=get-token-for-conversation >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_GET_APPOINTMENTS_ZAMBDA_ID=261592b3-84d2-4a45-847a-d818c0071781 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_UPDATE_USER_ZAMBDA_ID=c4c998ff-a18b-469d-b871-ce15b4e76ab5 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_GET_USER_ZAMBDA_ID=e12b11f4-9cb8-434f-85a1-0d8ce14b1628 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_SYNC_USER_ZAMBDA_ID=48c27e20-b30a-4d19-adce-1a1e7e10176c >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_DEACTIVATE_USER_ZAMBDA_ID=a6a47e58-4263-4a2c-86ab-5c2d43221522 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_GET_EMPLOYEES_ZAMBDA_ID=4fbd65a5-3d11-46a3-b9f7-fa6af8f74d3f >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_GET_TELEMED_APPOINTMENTS_ZAMBDA_ID=3659e87e-8d6e-433e-8873-3f798db1f99b >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_INIT_TELEMED_SESSION_ZAMBDA_ID=ea0153b7-b4c9-4706-b63b-476d08087aa8 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_GET_CHART_DATA_ZAMBDA_ID=0c136afd-f86f-41fa-9440-23f2f5ded8a3 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_SAVE_CHART_DATA_ZAMBDA_ID=3118e828-7339-4022-b438-73c7e2f6c6ca >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_CHANGE_TELEMED_APPOINTMENT_STATUS_ZAMBDA_ID=2dc8bb75-7093-463f-aa30-ecefc7290bcb >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_DELETE_CHART_DATA_ZAMBDA_ID=305ddf3d-9c8f-4619-bd74-07a3f7145e59 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
+          echo VITE_APP_QRS_URL=http://localhost:3002 >> ${{ env.PACKAGE_LOCATION }}/env/.env.${{ github.event.inputs.environment }}
 
       - name: Install dependencies
         run: pnpm install
