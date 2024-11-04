@@ -32,9 +32,9 @@ jobs:
 
     steps:
       - name: Checkout code
-          uses: actions/checkout@v2
-          with:
-            ref: ${{ github.event.inputs.branch }}
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
