@@ -46,6 +46,14 @@ jobs:
       - name: Create the .env directory
         run: mkdir -p ${{ env.ZAMBDAS_LOCATION }}/.env/
 
+      - name: Conditionally create empty development.json file
+        if: ${{ github.event.inputs.environment != 'development' }}
+        run: touch ${{ env.ZAMBDAS_LOCATION }}/.env/development.json
+
+      - name: Conditionally create empty testing.json file
+        if: ${{ github.event.inputs.environment != 'testing' }}
+        run: touch ${{ env.ZAMBDAS_LOCATION }}/.env/testing.json
+
       - name: Create .env/${{ github.event.inputs.environment }}.json file
         run: |
           echo AUTH0_ENDPOINT=https://auth.zapehr.com/oauth/token >> ${{ env.ZAMBDAS_LOCATION }}/.env/${{ github.event.inputs.environment }}.json
