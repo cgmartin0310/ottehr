@@ -49,18 +49,18 @@ jobs:
 
       - name: Create .env/${{ github.event.inputs.environment }}.json file
         run: |
-          echo '{"AUTH0_ENDPOINT1": "https://auth.zapehr.com/oauth/token"}' > ${{ env.ZAMBDAS_LOCATION }}/.env/${{ github.event.inputs.environment }}.json
-        
+          echo '{"AUTH0_ENDPOINT": "https://auth.zapehr.com/oauth/token"}' > ${{ env.ZAMBDAS_LOCATION }}/.env/${{ github.event.inputs.environment }}.json
+
       - name: Copy env file to local.json to support serverless package command
         run: cp ${{ env.ZAMBDAS_LOCATION }}/.env/${{ github.event.inputs.environment }}.json ${{ env.ZAMBDAS_LOCATION }}/.env/local.json
 
-      - name: Conditionally create empty development.json file
+      - name: Conditionally create valid development.json file
         if: ${{ github.event.inputs.environment != 'development' }}
-        run: touch ${{ env.ZAMBDAS_LOCATION }}/.env/development.json
+        run: echo '{}' > ${{ env.ZAMBDAS_LOCATION }}/.env/development.json
 
-      - name: Conditionally create empty testing.json file
+      - name: Conditionally create valid testing.json file
         if: ${{ github.event.inputs.environment != 'testing' }}
-        run: touch ${{ env.ZAMBDAS_LOCATION }}/.env/testing.json
+        run: echo '{}' > ${{ env.ZAMBDAS_LOCATION }}/.env/testing.json
 
       - name: Install dependencies
         run: pnpm install
